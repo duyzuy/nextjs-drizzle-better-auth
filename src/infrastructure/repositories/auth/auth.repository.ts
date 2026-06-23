@@ -1,5 +1,6 @@
 import { APIError } from "better-auth";
 import { headers } from "next/headers";
+import { InfrastructureError } from "@/dal/errors/common";
 import type {
 	SignInWithEmailDto,
 	SignUpWithEmailDto,
@@ -7,7 +8,6 @@ import type {
 } from "@/entities/auth/model/auth";
 import type { IAuthRepository } from "@/entities/auth/model/auth.repo";
 import { AuthUser } from "@/entities/auth/model/auth-user";
-import { InfrastructureError } from "@/infrastructure/helper/error";
 import { auth } from "@/lib/auth";
 
 export class AuthRepository implements IAuthRepository {
@@ -81,5 +81,3 @@ export class AuthRepository implements IAuthRepository {
 		throw new InfrastructureError("Unknown error", error);
 	}
 }
-
-export const authRepository = new AuthRepository();

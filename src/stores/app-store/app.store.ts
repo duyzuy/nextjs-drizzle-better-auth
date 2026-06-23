@@ -9,7 +9,7 @@ import { createThemeSlice, type ThemeSlice } from "@/features/theme/store/theme.
 export type AppStore = AuthSlice & ThemeSlice;
 
 export type AppStoreInit = {
-	// userInfo?: UserInformationSlice["userInformation"]["information"];
+	userInfo?: undefined;
 	accessToken?: string;
 	refreshToken?: string;
 };

@@ -1,8 +1,3 @@
-export abstract class AppError extends Error {
-	constructor(message: string) {
-		super(message);
-	}
-}
 export class InputParseError<TFields> extends Error {
 	constructor(
 		message: string,
@@ -13,7 +8,7 @@ export class InputParseError<TFields> extends Error {
 	}
 }
 
-export class BusinessError extends AppError {
+export class InfrastructureError extends Error {
 	constructor(
 		message: string,
 		public cause?: unknown,
@@ -22,11 +17,21 @@ export class BusinessError extends AppError {
 	}
 }
 
-export class DomainError extends AppError {
+export class DomainError extends Error {
 	constructor(
 		message: string,
 		public cause?: unknown,
 	) {
 		super(message);
+	}
+}
+
+export class DatabaseOperationError extends Error {
+	constructor(
+		message: string,
+		public readonly cause: unknown,
+	) {
+		super(message);
+		this.name = "DatabaseError";
 	}
 }

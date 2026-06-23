@@ -11,7 +11,7 @@ import {
 } from "@/components/base/field";
 import { Input } from "@/components/base/input";
 import { cn } from "@/lib/utils";
-import { signInAction } from "../dal/actions";
+import { signInAction } from "../actions/signin.action";
 
 export interface SigninFormProps {
 	className?: string;

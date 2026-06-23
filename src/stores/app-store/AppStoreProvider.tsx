@@ -10,14 +10,14 @@ export const AppStoreContext = createContext<CounterStoreApi | undefined>(undefi
 
 export interface AppStoreProviderProps {
 	children: ReactNode;
-	// userInfo?: AppStoreInit["userInfo"];
+	userInfo?: AppStoreInit["userInfo"];
 	accessToken?: string;
 	refreshToken?: string;
 }
 
 export const AppStoreProvider = ({
 	children,
-	// userInfo,
+	userInfo,
 	accessToken,
 	refreshToken,
 }: AppStoreProviderProps) => {

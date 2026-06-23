@@ -1,10 +1,11 @@
 "use client";
-import Form from "next/form";
-import { useActionState, useEffect } from "react";
+import { useAction } from "next-safe-action/hooks";
+import { type SubmitEventHandler, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import {
 	Field,
 	FieldDescription,
+	FieldError,
 	FieldGroup,
 	FieldLabel,
 	FieldSeparator,
@@ -12,35 +13,68 @@ import {
 import { Input } from "@/components/base/input";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { signupAction } from "../dal/actions";
+import { signupSafeAction } from "../actions/signup.action";
 
 interface SignUpFormProps {
 	className?: string;
 	onClickSignIn?: () => void;
 }
+
+const formFields = {
+	name: "name",
+	email: "email",
+	password: "password",
+	passwordConfirm: "passwordConfirm",
+} as const;
 export function SignupForm({ className, onClickSignIn }: SignUpFormProps) {
-	const [state, dispatchAction, isPending] = useActionState(signupAction, {
-		status: "idle",
+	const formRef = useRef<HTMLFormElement>(null);
+	const {
+		execute,
+		result: { validationErrors, data },
+		isExecuting: isPending,
+	} = useAction(signupSafeAction, {
+		onSuccess: () => {
+			formRef.current?.reset();
+		},
+		onError: ({ error }) => {
+			console.log(error);
+			if (error.serverError || error.thrownError) {
+				const errormessage = error?.serverError || error?.thrownError?.message;
+				toast.error(errormessage);
+			}
+		},
 	});
+
+	const handleSignUp: SubmitEventHandler<HTMLFormElement> = async (e) => {
+		e.preventDefault();
+		const formData = new FormData(e.currentTarget);
+		execute({
+			name: formData.get("name") as string,
+			email: formData.get("email") as string,
+			image: formData.get("image") as string,
+			password: formData.get("password") as string,
+			passwordConfirm: formData.get("passwordConfirm") as string,
+			callbackURL: formData.get("callbackURL") as string,
+		});
+	};
+
+	const renderErrorMessage = (field: keyof typeof formFields) => {
+		if (!validationErrors) return null;
+
+		const message = validationErrors[field]?._errors?.map((err) => ({
+			message: err,
+		}));
+		return <FieldError errors={message} />;
+	};
+
 	useEffect(() => {
-		if (state.status === "idle") return;
-
-		if (state.status === "success") {
-			toast.success("Created success!");
-			return;
-		}
-
-		let errorMessage = "Created fail!";
-
-		if (state.status === "error" && state.error.type !== "validation") {
-			errorMessage = state.error.message;
-		}
-		toast.error(errorMessage);
-	}, [state]);
+		if (!data || data?.status !== "error") return;
+		toast(data.message);
+	}, [data]);
 
 	return (
 		<div className={cn("sign-up-form", className)}>
-			<form action={dispatchAction}>
+			<form ref={formRef} onSubmit={handleSignUp}>
 				<FieldGroup>
 					<div className="flex flex-col items-center gap-2 text-center">
 						<h1 className="text-2xl font-bold">Create your account</h1>
@@ -54,15 +88,10 @@ export function SignupForm({ className, onClickSignIn }: SignUpFormProps) {
 							id="name"
 							name="name"
 							placeholder="Name"
-							defaultValue={state.status === "error" ? state?.fields?.name : ""}
 							disabled={isPending}
 							required
 						/>
-						<FieldDescription className="text-xs text-red-500">
-							{state.status === "error" && state.error.type === "validation"
-								? state.error.fields.name
-								: ""}
-						</FieldDescription>
+						{renderErrorMessage("name")}
 					</Field>
 					<Field>
 						<FieldLabel htmlFor="email">Email</FieldLabel>
@@ -71,15 +100,10 @@ export function SignupForm({ className, onClickSignIn }: SignUpFormProps) {
 							type="text"
 							name="email"
 							placeholder="m@example.com"
-							defaultValue={state.status === "error" ? state?.fields?.email : ""}
 							disabled={isPending}
 							required
 						/>
-						<FieldDescription className="text-xs text-red-500">
-							{state.status === "error" && state.error.type === "validation"
-								? state.error.fields.email
-								: ""}
-						</FieldDescription>
+						{renderErrorMessage("email")}
 					</Field>
 					<Field>
 						<Field className="grid grid-cols-2 gap-4">
@@ -88,46 +112,28 @@ export function SignupForm({ className, onClickSignIn }: SignUpFormProps) {
 								<Input
 									id="password"
 									type="password"
-									name="password"
-									defaultValue={
-										state.status === "error" ? state?.fields?.password : ""
-									}
+									name={formFields.password}
 									disabled={isPending}
 									required
 								/>
-								<FieldDescription className="text-xs text-red-500">
-									{state.status === "error" && state.error.type === "validation"
-										? state.error.fields.password
-										: ""}
-								</FieldDescription>
+								{renderErrorMessage("password")}
 							</Field>
 							<Field>
 								<FieldLabel htmlFor="confirm-password">Confirm Password</FieldLabel>
 								<Input
 									id="confirm-password"
 									type="password"
-									name="passwordConfirm"
+									name={formFields.passwordConfirm}
 									disabled={isPending}
-									defaultValue={
-										state.status === "error"
-											? state?.fields?.passwordConfirm
-											: ""
-									}
 									required
 								/>
-								<FieldDescription className="text-xs text-red-500">
-									{state.status === "error" && state.error.type === "validation"
-										? state.error.fields.passwordConfirm
-										: ""}
-								</FieldDescription>
+								{renderErrorMessage("passwordConfirm")}
 							</Field>
 						</Field>
 						<FieldDescription>Must be at least 8 characters long.</FieldDescription>
 					</Field>
 					<Field>
-						<Button type="submit">
-							{isPending ? "Creating..." : "Create Account"}
-						</Button>
+						<Button>{isPending ? "Creating..." : "Create Account"}</Button>
 					</Field>
 					<FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
 						Or continue with
@@ -161,9 +167,7 @@ export function SignupForm({ className, onClickSignIn }: SignUpFormProps) {
 									fill="currentColor"
 								/>
 							</svg>
-							<span className="sr-only">
-								{isPending ? "Creating account..." : "Sign up with Meta"}
-							</span>
+							<span className="sr-only">Sign up with Meta</span>
 						</Button>
 					</Field>
 					<FieldDescription className="text-center">

@@ -10,7 +10,7 @@ import MainHeader from "@/widgets/MainHeader";
 import "../themes/globals.css";
 import "../themes/transition.css";
 
-import { AppProviders } from "@/widgets/AppProviders";
+import { AppProviders } from "@/providers/AppProviders";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
