@@ -2,15 +2,24 @@
 import { APIError } from "better-auth";
 import { revalidatePath } from "next/cache";
 import { authService } from "@/dal/controller/auth.controller";
+import type { AuthUser } from "@/entities/auth/model/auth-user";
 import { actionClient } from "@/lib/safe-action";
 import { SignUpWithEmailSchema } from "./auth.schema";
+
+type SignUpSuccessReturn = {
+	status: "success";
+	data: AuthUser;
+};
+
+type SignUpErrorReturn = { status: "error"; message: string };
+type SignUpReturn = SignUpSuccessReturn | SignUpErrorReturn;
 
 export const signupSafeAction = actionClient
 	.use(async ({ next }) => {
 		return next();
 	})
 	.inputSchema(SignUpWithEmailSchema)
-	.action(async ({ parsedInput, ctx }) => {
+	.action(async ({ parsedInput }): Promise<SignUpReturn> => {
 		try {
 			const data = await authService.signUp({
 				email: parsedInput.email,
@@ -20,7 +29,7 @@ export const signupSafeAction = actionClient
 				image: parsedInput.image ?? undefined,
 			});
 			revalidatePath("/");
-			return { status: "success", data: { id: data.id, name: data.name, email: data.email } };
+			return { status: "success", data };
 		} catch (err) {
 			if (err instanceof APIError) {
 				return { status: "error", message: err.message };

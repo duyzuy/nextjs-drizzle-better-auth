@@ -30,14 +30,18 @@ export function SignupForm({ className, onClickSignIn }: SignUpFormProps) {
 	const formRef = useRef<HTMLFormElement>(null);
 	const {
 		execute,
-		result: { validationErrors, data },
+		result: { validationErrors },
 		isExecuting: isPending,
 	} = useAction(signupSafeAction, {
-		onSuccess: () => {
-			formRef.current?.reset();
+		onSuccess: ({ data }) => {
+			if (data.status === "success") {
+				formRef.current?.reset();
+			}
+			if (data.status === "error") {
+				toast(data.message);
+			}
 		},
 		onError: ({ error }) => {
-			console.log(error);
 			if (error.serverError || error.thrownError) {
 				const errormessage = error?.serverError || error?.thrownError?.message;
 				toast.error(errormessage);
@@ -66,11 +70,6 @@ export function SignupForm({ className, onClickSignIn }: SignUpFormProps) {
 		}));
 		return <FieldError errors={message} />;
 	};
-
-	useEffect(() => {
-		if (!data || data?.status !== "error") return;
-		toast(data.message);
-	}, [data]);
 
 	return (
 		<div className={cn("sign-up-form", className)}>
