@@ -1,9 +1,16 @@
-import type { SignInWithEmailDto, SignUpWithEmailDto, VerifyEmailDto } from "./auth";
-import type { AuthUser } from "./auth-user";
+import type {
+	AuthSession,
+	AuthSignedIn,
+	AuthSignedUp,
+	SignInWithEmailDto,
+	SignUpWithEmailDto,
+	VerifyEmailDto,
+} from "./auth";
 
 export interface IAuthRepository {
-	signInWithEmail(dto: SignInWithEmailDto): Promise<AuthUser>;
-	signUpWithEmail(dto: SignUpWithEmailDto): Promise<AuthUser>;
-	signOut(): Promise<boolean>;
+	signInWithEmail(dto: SignInWithEmailDto): Promise<AuthSignedIn>;
+	signUpWithEmail(dto: SignUpWithEmailDto): Promise<AuthSignedUp>;
+	signOut(): Promise<{ success: boolean; setCookies: string[] }>;
 	verifyEmail(dto: VerifyEmailDto): Promise<boolean>;
+	getSession: () => Promise<AuthSession | null>;
 }

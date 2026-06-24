@@ -1,6 +1,10 @@
-import type { SignInWithEmailDto, SignUpWithEmailDto } from "@/entities/auth/model/auth";
+import type {
+	AuthSignedIn,
+	AuthSignedUp,
+	SignInWithEmailDto,
+	SignUpWithEmailDto,
+} from "@/entities/auth/model/auth";
 import type { IAuthRepository } from "@/entities/auth/model/auth.repo";
-import type { AuthUser } from "@/entities/auth/model/auth-user";
 import type { AuthDomainRules } from "./auth.policy";
 
 export class AuthService {
@@ -9,7 +13,7 @@ export class AuthService {
 		private authDomainRule: AuthDomainRules,
 	) {}
 
-	async signUp(signUpInput: SignUpWithEmailDto): Promise<AuthUser> {
+	async signUp(signUpInput: SignUpWithEmailDto): Promise<AuthSignedUp> {
 		this.authDomainRule.validateSignUp({
 			email: signUpInput.email,
 			name: signUpInput.name,
@@ -27,13 +31,26 @@ export class AuthService {
 		return userSignUp;
 	}
 
-	async signIn(signInInput: SignInWithEmailDto): Promise<AuthUser> {
+	async signIn(signInInput: SignInWithEmailDto): Promise<AuthSignedIn> {
 		this.authDomainRule.validateSignIn(signInInput);
-		const userSignIn = await this.authRepository.signInWithEmail({
+		return this.authRepository.signInWithEmail({
 			email: signInInput.email,
 			password: signInInput.password,
 			rememberMe: signInInput.rememberMe,
 		});
-		return userSignIn;
+	}
+
+	async getSession() {
+		return this.authRepository.getSession();
+	}
+	async signOut() {
+		return this.authRepository.signOut();
+	}
+
+	async verifyEmail(email: string, callbackUrl?: string): Promise<boolean> {
+		return this.authRepository.verifyEmail({
+			email,
+			callBackURL: callbackUrl,
+		});
 	}
 }

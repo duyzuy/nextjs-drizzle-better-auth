@@ -1,20 +1,28 @@
 "use client";
 import { useRouter } from "next/navigation";
+import { useAction } from "next-safe-action/hooks";
 import { Button } from "@/components/base/button";
-import useSignout from "../hooks/useSignout";
+import { cn } from "@/lib/utils";
+import { signoutSafeAction } from "../actions/signout.action";
 
-function SignoutButton() {
-	const { mutate: onSignout, isPending } = useSignout();
+interface SignoutButtonProps {
+	className?: string;
+}
+function SignoutButton({ className }: SignoutButtonProps) {
 	const router = useRouter();
-	const handleSignout = () => {
-		onSignout(undefined, {
-			onSuccess: () => {
+
+	const { execute, isPending } = useAction(signoutSafeAction, {
+		onSuccess: ({ data }) => {
+			if (data.status === "success") {
 				router.refresh();
-			},
-		});
+			}
+		},
+	});
+	const handleSignout = () => {
+		execute();
 	};
 	return (
-		<Button disabled={isPending} onClick={handleSignout}>
+		<Button disabled={isPending} onClick={handleSignout} className={cn(className)}>
 			Logout
 		</Button>
 	);

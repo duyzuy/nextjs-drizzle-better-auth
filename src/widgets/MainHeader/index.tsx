@@ -10,6 +10,7 @@ import UnAuthorized from "@/features/auth/components/UnAuthorized";
 // import UserInformationDropdown from "@/features/profile/components/UserInformationDropdown";
 import ThemeModeButton from "@/features/theme/components/ThemeModeButton";
 import { cn } from "@/lib/utils";
+import { AccountInformationDropdown } from "./AccountInformationDropdown";
 
 export interface MainHeaderProps {
 	className?: string;
@@ -53,9 +54,9 @@ const MainHeader: React.FC<MainHeaderProps> = () => {
 						<Button variant="outline" size="icon" aria-label="Search">
 							<SearchIcon />
 						</Button>
-						{/* <Authorized>
-							<UserInformationDropdown />
-						</Authorized> */}
+						<Authorized>
+							<AccountInformationDropdown />
+						</Authorized>
 						<UnAuthorized>
 							<TriggerSigninDialogButton>
 								<User />

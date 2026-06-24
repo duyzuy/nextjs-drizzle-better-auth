@@ -1,9 +1,19 @@
 import { useAppStore } from "@/stores/app-store/AppStoreProvider";
 
 export const useAuth = () => {
-	const token = useAppStore((store) => store.auth.accessToken);
+	const session = useAppStore((store) => store.auth.session);
+	const user = useAppStore((store) => store.auth.user);
+
+	if (!session) {
+		return {
+			isLoggedIn: false,
+			session: undefined,
+			user: undefined,
+		};
+	}
 	return {
-		isLoggedIn: Boolean(token),
-		token,
+		isLoggedIn: true,
+		session,
+		user,
 	};
 };

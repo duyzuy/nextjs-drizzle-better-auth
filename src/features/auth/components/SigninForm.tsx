@@ -1,10 +1,13 @@
 "use client";
-import { useActionState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAction } from "next-safe-action/hooks";
+import { type SubmitEventHandler, useActionState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/base/button";
 import {
 	Field,
 	FieldDescription,
+	FieldError,
 	FieldGroup,
 	FieldLabel,
 	FieldSeparator,
@@ -13,27 +16,52 @@ import { Input } from "@/components/base/input";
 import { cn } from "@/lib/utils";
 import { signInAction } from "../actions/signin.action";
 
+const formFields = {
+	email: "email",
+	password: "password",
+};
 export interface SigninFormProps {
 	className?: string;
 	onClickSignup?: () => void;
 }
 
 const SigninForm: React.FC<SigninFormProps> = ({ className, onClickSignup }) => {
-	const [state, formAction, isPending] = useActionState(signInAction, { status: "idle" });
+	const formRef = useRef<HTMLFormElement>(null);
+	const router = useRouter();
+	const {
+		execute,
+		result: { validationErrors },
+		isPending,
+	} = useAction(signInAction, {
+		onSuccess: ({ data }) => {
+			if (data.status === "success") {
+				toast.success("Login success");
+				router.refresh();
+			}
+			if (data.status === "error") {
+				toast.success(data.message);
+			}
+		},
+	});
 
-	useEffect(() => {
-		if (state.status === "idle") return;
+	const handleSignIn: SubmitEventHandler<HTMLFormElement> = (evt) => {
+		evt.preventDefault();
+		const form = new FormData(evt.currentTarget);
+		execute({ email: form.get("email") as string, password: form.get("password") as string });
+	};
 
-		if (state.status === "success") {
-			toast.success("Sign-in success");
-		}
-		if (state.status === "error") {
-			toast.error("Sign-in error");
-		}
-	}, [state]);
+	const renderErrorMessage = (field: keyof typeof formFields) => {
+		if (!validationErrors) return null;
+
+		const message = validationErrors[field]?._errors?.map((err) => ({
+			message: err,
+		}));
+		return <FieldError errors={message} />;
+	};
+
 	return (
 		<div className={cn("sign-in-form", className)}>
-			<form action={formAction}>
+			<form ref={formRef} onSubmit={handleSignIn}>
 				<FieldGroup>
 					<div className="flex flex-col items-center gap-2 text-center">
 						<h1 className="text-2xl font-bold">Welcome back</h1>
@@ -41,15 +69,18 @@ const SigninForm: React.FC<SigninFormProps> = ({ className, onClickSignup }) => 
 							Login to explore and get free promotion.
 						</p>
 					</div>
+
 					<Field>
 						<FieldLabel htmlFor="input-demo-api-key">Email</FieldLabel>
 						<Input
 							id="input-email"
 							placeholder="Email"
 							autoComplete="email"
+							name="email"
 							disabled={isPending}
 							type="text"
 						/>
+						{renderErrorMessage("email")}
 					</Field>
 					<Field>
 						<div className="flex items-center">
@@ -67,8 +98,9 @@ const SigninForm: React.FC<SigninFormProps> = ({ className, onClickSignup }) => 
 							autoComplete="current-password"
 							disabled={isPending}
 							type="password"
+							name="password"
 						/>
-						{/* <FieldDescription>{error?.message}</FieldDescription> */}
+						{renderErrorMessage("password")}
 					</Field>
 					<Field>
 						<Button type="submit" disabled={isPending}>

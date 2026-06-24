@@ -10,23 +10,16 @@ export const AppStoreContext = createContext<CounterStoreApi | undefined>(undefi
 
 export interface AppStoreProviderProps {
 	children: ReactNode;
-	userInfo?: AppStoreInit["userInfo"];
-	accessToken?: string;
-	refreshToken?: string;
+	session?: AppStoreInit["session"];
+	user: AppStoreInit["user"];
 }
 
-export const AppStoreProvider = ({
-	children,
-	userInfo,
-	accessToken,
-	refreshToken,
-}: AppStoreProviderProps) => {
-	const [store] = useState(() => createAppStore({ accessToken, refreshToken }));
+export const AppStoreProvider = ({ children, session, user }: AppStoreProviderProps) => {
+	const [store] = useState(() => createAppStore({ session, user }));
 
 	useEffect(() => {
-		store.getState().auth.setTokens(accessToken, refreshToken);
-		// store.getState().userInformation.setInformation(userInfo);
-	}, [accessToken, refreshToken, store]);
+		store.getState().auth.setSession(session, user);
+	}, [session, user, store]);
 
 	return <AppStoreContext.Provider value={store}>{children}</AppStoreContext.Provider>;
 };

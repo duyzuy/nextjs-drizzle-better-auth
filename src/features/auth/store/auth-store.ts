@@ -4,21 +4,33 @@ type AuthModalType = "signin" | "signup" | "forgot-password" | "verify-email";
 
 export type AuthSliceState = {
 	activeModal?: AuthModalType;
-	token?: string;
-	accessToken?: string;
-	refreshToken?: string;
+	session?: {
+		id: string;
+		userId: string;
+		expiredAt: string;
+		token: string;
+		ipAddress?: string;
+		userAgent?: string;
+	};
+	user?: {
+		id: string;
+		name: string;
+		email: string;
+		emailVerified: boolean;
+		avatar?: string;
+	};
 };
 export type AuthSliceAction = {
 	showModal: (type: AuthModalType) => void;
 	closeModal: () => void;
-	setTokens: (accessToken: string | undefined, refreshToken: string | undefined) => void;
+	setSession: (session: AuthSliceState["session"], user: AuthSliceState["user"]) => void;
 };
 
 export type AuthSlice = { auth: AuthSliceState & AuthSliceAction };
 const defaultAuthState: AuthSliceState = {
 	activeModal: undefined,
-	accessToken: undefined,
-	refreshToken: undefined,
+	session: undefined,
+	user: undefined,
 };
 export const createAuthSlice: (init?: AuthSliceState) => StateCreator<AuthSlice> =
 	(init) => (set, get, api) => ({
@@ -41,12 +53,12 @@ export const createAuthSlice: (init?: AuthSliceState) => StateCreator<AuthSlice>
 					},
 				}));
 			},
-			setTokens: (accessToken, refreshToken) => {
+			setSession: (session, user) => {
 				set((state) => ({
 					auth: {
 						...state.auth,
-						accessToken,
-						refreshToken,
+						session,
+						user,
 						activeModal: undefined,
 					},
 				}));

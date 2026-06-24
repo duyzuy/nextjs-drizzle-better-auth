@@ -1,5 +1,5 @@
+import { DomainError } from "@/dal/errors/common";
 import type { SignInWithEmailDto, SignUpWithEmailDto } from "@/entities/auth/model/auth";
-import { DomainError } from "../errors/common";
 export class AuthDomainRules {
 	validateSignUp(input: SignUpWithEmailDto) {
 		if (input.email.endsWith("@spam.com")) {

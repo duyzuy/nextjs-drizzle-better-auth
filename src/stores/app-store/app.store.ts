@@ -1,27 +1,21 @@
 import { createStore } from "zustand/vanilla";
-import { type AuthSlice, createAuthSlice } from "@/features/auth/store/auth-store";
-// import {
-// 	createUserInformationSlice,
-// 	type UserInformationSlice,
-// } from "@/features/profile/store/user-information.slice";
+import {
+	type AuthSlice,
+	type AuthSliceState,
+	createAuthSlice,
+} from "@/features/auth/store/auth-store";
 import { createThemeSlice, type ThemeSlice } from "@/features/theme/store/theme.slice";
 
 export type AppStore = AuthSlice & ThemeSlice;
 
 export type AppStoreInit = {
-	userInfo?: undefined;
-	accessToken?: string;
-	refreshToken?: string;
+	user?: AuthSliceState["user"];
+	session?: AuthSliceState["session"];
 };
 
-export const createAppStore = (init?: AppStoreInit) => {
+export const createAppStore = ({ user, session }: AppStoreInit) => {
 	return createStore<AppStore>()((set, get, api) => ({
-		...createAuthSlice({ accessToken: init?.accessToken, refreshToken: init?.refreshToken })(
-			set,
-			get,
-			api,
-		),
+		...createAuthSlice({ session, user })(set, get, api),
 		...createThemeSlice()(set, get, api),
-		// ...createUserInformationSlice({ information: init?.userInfo })(set, get, api),
 	}));
 };

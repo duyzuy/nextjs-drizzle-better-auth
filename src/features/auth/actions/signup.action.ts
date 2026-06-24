@@ -2,13 +2,15 @@
 import { APIError } from "better-auth";
 import { revalidatePath } from "next/cache";
 import { authService } from "@/dal/controller/auth.controller";
-import type { AuthUser } from "@/entities/auth/model/auth-user";
 import { actionClient } from "@/lib/safe-action";
 import { SignUpWithEmailSchema } from "./auth.schema";
 
 type SignUpSuccessReturn = {
 	status: "success";
-	data: AuthUser;
+	data: {
+		id: string;
+		name: string;
+	};
 };
 
 type SignUpErrorReturn = { status: "error"; message: string };
@@ -28,8 +30,13 @@ export const signupSafeAction = actionClient
 				callbackURL: parsedInput.callbackURL ?? undefined,
 				image: parsedInput.image ?? undefined,
 			});
-			revalidatePath("/");
-			return { status: "success", data };
+			return {
+				status: "success",
+				data: {
+					id: data.id,
+					name: data.name,
+				},
+			};
 		} catch (err) {
 			if (err instanceof APIError) {
 				return { status: "error", message: err.message };

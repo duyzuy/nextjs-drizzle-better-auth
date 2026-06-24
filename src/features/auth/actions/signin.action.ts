@@ -1,86 +1,57 @@
 "use server";
-import { revalidatePath } from "next/cache";
-import z from "zod";
+import { cookies } from "next/headers";
 import { authService } from "@/dal/controller/auth.controller";
-import { DomainError } from "@/dal/errors/common";
+import { parserCookie } from "@/utils/cookie";
 import { SignInWithEmailSchema } from "./auth.schema";
 
-type SignInFieldsError = z.inferFlattenedErrors<typeof SignInWithEmailSchema>["fieldErrors"];
-type SignInFields = Partial<z.input<typeof SignInWithEmailSchema>>;
+type SignInSuccessReturn = {
+	status: "success";
+	data: { id: string; email: string; name: string };
+};
 
-export type SignInActionState =
-	| { status: "idle" }
-	| {
-			status: "success";
-			data: {
-				id: string;
-				name: string;
-			};
-	  }
-	| {
-			status: "error";
-			fields: SignInFields;
-			error:
-				| {
-						type: "business";
-						message: string;
-				  }
-				| {
-						type: "system";
-						message: string;
-				  }
-				| {
-						type: "validation";
-						message: string;
-						fields: SignInFieldsError;
-				  };
-	  };
+type SignInErrorReturn = { status: "error"; message: string };
+type SignUpReturn = SignInSuccessReturn | SignInErrorReturn;
 
-export async function signInAction(
-	_: SignInActionState,
-	formData: FormData,
-): Promise<SignInActionState> {
-	const inputs = {
-		email: formData.get("name") as string,
-		password: formData.get("password") as string,
-	};
+import { APIError } from "better-auth";
+import { actionClient } from "@/lib/safe-action";
 
-	try {
-		const data = await authService.signIn(inputs);
+export const signInAction = actionClient
+	.inputSchema(SignInWithEmailSchema)
+	.action(async ({ parsedInput }): Promise<SignUpReturn> => {
+		try {
+			const data = await authService.signIn({
+				email: parsedInput.email,
+				password: parsedInput.password,
+				rememberMe: true,
+			});
 
-		const parsInput = await SignInWithEmailSchema.safeParseAsync(inputs);
-		if (!parsInput.success) {
-			const fields = z.flattenError(parsInput.error).fieldErrors;
+			const cookieStore = await cookies();
+
+			const setCookies = data.setCookies;
+
+			for (const cookie of setCookies) {
+				const cookieParsed = parserCookie(cookie);
+				console.log({ cookieParsed, cookie });
+				cookieStore.set({
+					name: cookieParsed.name,
+					value: decodeURIComponent(cookieParsed.value),
+					secure: true,
+					path: cookieParsed.path,
+					httpOnly: cookieParsed.httpOnly,
+					maxAge: cookieParsed.maxAge,
+					sameSite: cookieParsed.sameSite,
+				});
+			}
 			return {
-				status: "error",
-				fields: inputs,
-				error: {
-					type: "validation",
-					message: "Validation error",
-					fields,
-				},
+				status: "success",
+				data: { id: data.id, email: data.name, name: data.name },
 			};
+		} catch (error) {
+			console.log(error);
+			if (error instanceof APIError) {
+				return { status: "error", message: error.message };
+			}
+			const errorMessage = error instanceof Error ? error.message : "unknown error";
+			return { status: "error", message: errorMessage };
 		}
-		revalidatePath("/");
-		return { status: "success", data: { id: data.id, name: data.name } };
-	} catch (error) {
-		if (error instanceof DomainError) {
-			return {
-				status: "error",
-				fields: inputs,
-				error: {
-					type: "business",
-					message: error.message,
-				},
-			};
-		}
-		return {
-			status: "error",
-			fields: inputs,
-			error: {
-				type: "system",
-				message: "Unexpected server error",
-			},
-		};
-	}
-}
+	});

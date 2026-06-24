@@ -1,29 +1,33 @@
-// import { getProfile } from "@/features/profile/server";
+"use server";
+import { authService } from "@/dal/controller/auth.controller";
 import ThemeController from "@/features/theme/controllers/ThemeController";
-import { getAccessToken, getRefreshToken } from "@/lib/cookie";
 import QueryClientProvider from "@/providers/QueryClientProvider";
 import { AppStoreProvider } from "@/stores/app-store/AppStoreProvider";
-
 export async function AppProviders({ children }: React.PropsWithChildren) {
-	const [accessToken, refreshToken] = await Promise.all([getAccessToken(), getRefreshToken()]);
+	const { session, user } = (await authService.getSession()) || {};
+	const userInfoStore = user
+		? {
+				id: user.id,
+				name: user.name,
+				email: user.email,
+				avatar: user.image,
+				emailVerified: user.emailVerified,
+			}
+		: undefined;
 
-	// const userProfile = accessToken ? await getProfile(accessToken) : null;
-	// const userProfile = null;
-	// const userInfoStore = userProfile
-	// 	? {
-	// 			id: userProfile.id,
-	// 			email: userProfile?.email,
-	// 			name: userProfile.name,
-	// 			username: userProfile.username,
-	// 		}
-	// 	: undefined;
+	const sessionStore = session
+		? {
+				id: session.id,
+				ipAddress: session.ipAddress ?? undefined,
+				token: session.token,
+				userAgent: session.userAgent,
+				userId: session.userId,
+				expiredAt: session.expiresAt,
+			}
+		: undefined;
 
 	return (
-		<AppStoreProvider
-			accessToken={accessToken}
-			refreshToken={refreshToken}
-			userInfo={undefined}
-		>
+		<AppStoreProvider session={sessionStore} user={userInfoStore}>
 			<ThemeController />
 			<QueryClientProvider>{children}</QueryClientProvider>
 		</AppStoreProvider>

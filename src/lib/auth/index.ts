@@ -15,17 +15,4 @@ export const auth = betterAuth({
 		enabled: true,
 	},
 	experimental: { joins: true },
-	// emailVerification: {
-	// 	sendVerificationEmail: async ({ user, url, token }, request) => {
-	// 		void sendEmail({
-	// 			to: user.email,
-	// 			subject: "Verify your email address",
-	// 			text: `Click the link to verify your email: ${url}`,
-	// 		});
-	// 	},
-	// },
 });
-
-// function sendEmail(params: { to: string; subject: string; text: string }) {
-// 	// add Resend to test
-// }

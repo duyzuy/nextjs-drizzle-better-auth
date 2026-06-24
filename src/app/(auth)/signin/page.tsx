@@ -1,6 +1,5 @@
 "use client";
 
-import { GalleryVerticalEndIcon } from "lucide-react";
 import Image from "next/image";
 import { Card, CardContent } from "@/components/base/card";
 import { FieldDescription } from "@/components/base/field";
