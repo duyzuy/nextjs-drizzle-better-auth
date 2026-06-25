@@ -2,7 +2,7 @@
 import type React from "react";
 import { useAuth } from "../hooks/useAuth";
 
-function Authorized(props: { children: React.ReactNode }) {
+function Authenticated(props: { children: React.ReactNode }) {
 	const auth = useAuth();
 
 	if (!auth.isLoggedIn) {
@@ -11,4 +11,4 @@ function Authorized(props: { children: React.ReactNode }) {
 	return props.children;
 }
 
-export default Authorized;
+export default Authenticated;

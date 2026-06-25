@@ -1,4 +1,4 @@
-export type SignUpWithEmailDto = {
+export type SignUpWithEmailInput = {
 	name: string;
 	email: string;
 	password: string;
@@ -6,18 +6,18 @@ export type SignUpWithEmailDto = {
 	callbackURL?: string;
 };
 
-export type SignInWithEmailDto = {
+export type SignInWithEmailInput = {
 	email: string;
 	password: string;
 	rememberMe?: boolean;
 	callbackUrl?: string;
 };
 
-export type VerifyEmailDto = {
+export type VerifyEmailInput = {
 	email: string;
 	callBackURL?: string;
 };
-export type AuthSignedIn = {
+export type AuthSignedInResult = {
 	id: string;
 	name: string;
 	email: string;
@@ -25,12 +25,13 @@ export type AuthSignedIn = {
 	setCookies: string[];
 };
 
-export type AuthSignedUp = {
+export type AuthSignedUpResult = {
 	id: string;
 	email: string;
 	name: string;
 };
-export type AuthSession = {
+
+export type AuthSessionResult = {
 	session: {
 		id: string;
 		createdAt: string;

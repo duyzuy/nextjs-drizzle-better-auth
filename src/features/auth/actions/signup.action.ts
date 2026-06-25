@@ -1,7 +1,5 @@
 "use server";
-import { APIError } from "better-auth";
-import { revalidatePath } from "next/cache";
-import { authService } from "@/dal/controller/auth.controller";
+import { appContainer, getInjection } from "@/dal/container";
 import { actionClient } from "@/lib/safe-action";
 import { SignUpWithEmailSchema } from "./auth.schema";
 
@@ -23,7 +21,9 @@ export const signupSafeAction = actionClient
 	.inputSchema(SignUpWithEmailSchema)
 	.action(async ({ parsedInput }): Promise<SignUpReturn> => {
 		try {
-			const data = await authService.signUp({
+			const authService = getInjection("authService");
+
+			const data = await authService.signUpWithEmail({
 				email: parsedInput.email,
 				name: parsedInput.name,
 				password: parsedInput.password,
@@ -38,9 +38,6 @@ export const signupSafeAction = actionClient
 				},
 			};
 		} catch (err) {
-			if (err instanceof APIError) {
-				return { status: "error", message: err.message };
-			}
 			const errorMessage = err instanceof Error ? err.message : "unknown error";
 			return { status: "error", message: errorMessage };
 		}

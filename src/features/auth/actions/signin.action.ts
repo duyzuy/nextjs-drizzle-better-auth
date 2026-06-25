@@ -1,6 +1,6 @@
 "use server";
 import { cookies } from "next/headers";
-import { authService } from "@/dal/controller/auth.controller";
+import { getInjection } from "@/dal/container";
 import { parserCookie } from "@/utils/cookie";
 import { SignInWithEmailSchema } from "./auth.schema";
 
@@ -19,7 +19,8 @@ export const signInAction = actionClient
 	.inputSchema(SignInWithEmailSchema)
 	.action(async ({ parsedInput }): Promise<SignUpReturn> => {
 		try {
-			const data = await authService.signIn({
+			const authService = getInjection("authService");
+			const data = await authService.signInWithEmail({
 				email: parsedInput.email,
 				password: parsedInput.password,
 				rememberMe: true,

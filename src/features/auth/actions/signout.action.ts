@@ -1,7 +1,7 @@
 "use server";
 import { APIError } from "better-auth";
 import { cookies } from "next/headers";
-import { authService } from "@/dal/controller/auth.controller";
+import { appContainer, getInjection } from "@/dal/container";
 import { actionClient } from "@/lib/safe-action";
 import { parserCookie } from "@/utils/cookie";
 
@@ -18,6 +18,8 @@ export const signoutSafeAction = actionClient
 	})
 	.action(async (): Promise<SignoutReturn> => {
 		try {
+			const authService = getInjection("authService");
+
 			const { setCookies, success } = await authService.signOut();
 			const cookieStore = await cookies();
 

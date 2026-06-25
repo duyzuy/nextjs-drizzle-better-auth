@@ -34,11 +34,13 @@ export function SignupForm({ className, onClickSignIn }: SignUpFormProps) {
 		isExecuting: isPending,
 	} = useAction(signupSafeAction, {
 		onSuccess: ({ data }) => {
+			console.log(data);
 			if (data.status === "success") {
 				formRef.current?.reset();
+				toast.success("Tao thanh cong");
 			}
 			if (data.status === "error") {
-				toast(data.message);
+				toast.error(data.message);
 			}
 		},
 		onError: ({ error }) => {

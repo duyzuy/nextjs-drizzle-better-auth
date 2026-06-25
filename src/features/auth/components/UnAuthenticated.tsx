@@ -2,7 +2,7 @@
 import type React from "react";
 import { useAuth } from "../hooks/useAuth";
 
-function UnAuthorized(props: { children: React.ReactNode }) {
+function UnAuthenticated(props: { children: React.ReactNode }) {
 	const auth = useAuth();
 
 	if (auth.isLoggedIn) {
@@ -11,4 +11,4 @@ function UnAuthorized(props: { children: React.ReactNode }) {
 	return props.children;
 }
 
-export default UnAuthorized;
+export default UnAuthenticated;

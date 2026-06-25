@@ -1,27 +1,27 @@
 import { APIError } from "better-auth";
 import { headers } from "next/headers";
-import { InfrastructureError } from "@/dal/errors/common";
+import type { IAuthService } from "@/dal/application/services/auth.service.interface";
 import type {
-	AuthSession,
-	AuthSignedIn,
-	AuthSignedUp,
-	SignInWithEmailDto,
-	SignUpWithEmailDto,
-	VerifyEmailDto,
-} from "@/entities/auth/model/auth";
-import type { IAuthRepository } from "@/entities/auth/model/auth.repo";
+	AuthSessionResult,
+	AuthSignedInResult,
+	AuthSignedUpResult,
+	SignInWithEmailInput,
+	SignUpWithEmailInput,
+	VerifyEmailInput,
+} from "@/dal/domain/auth/auth.model";
 import { auth } from "@/lib/auth";
+import { ExternalApiError, InvalidCredentialsError } from "../errors";
 
-export class AuthRepository implements IAuthRepository {
-	async signUpWithEmail(signUpDto: SignUpWithEmailDto): Promise<AuthSignedUp> {
+export class AuthService implements IAuthService {
+	async signUpWithEmail(input: SignUpWithEmailInput): Promise<AuthSignedUpResult> {
 		try {
 			const { user } = await auth.api.signUpEmail({
 				body: {
-					name: signUpDto.name,
-					email: signUpDto.email,
-					password: signUpDto.password,
-					image: signUpDto.image ?? undefined,
-					callbackURL: signUpDto.callbackURL ?? undefined,
+					name: input.name,
+					email: input.email,
+					password: input.password,
+					image: input.image ?? undefined,
+					callbackURL: input.callbackURL ?? undefined,
 				},
 			});
 			return {
@@ -34,17 +34,17 @@ export class AuthRepository implements IAuthRepository {
 		}
 	}
 
-	async signInWithEmail(signInWithEmailDto: SignInWithEmailDto): Promise<AuthSignedIn> {
+	async signInWithEmail(input: SignInWithEmailInput): Promise<AuthSignedInResult> {
 		try {
 			const {
 				headers: headerResponse,
 				response: { user, token, url },
 			} = await auth.api.signInEmail({
 				body: {
-					email: signInWithEmailDto.email,
-					password: signInWithEmailDto.password,
-					rememberMe: signInWithEmailDto.rememberMe,
-					callbackURL: signInWithEmailDto.callbackUrl,
+					email: input.email,
+					password: input.password,
+					rememberMe: input.rememberMe,
+					callbackURL: input.callbackUrl,
 				},
 				returnHeaders: true,
 				headers: await headers(),
@@ -75,12 +75,12 @@ export class AuthRepository implements IAuthRepository {
 			this.throwAuthError(error);
 		}
 	}
-	async verifyEmail(dto: VerifyEmailDto) {
+	async sendEmailVerification(input: VerifyEmailInput) {
 		try {
 			const data = await auth.api.sendVerificationEmail({
 				body: {
-					email: dto.email,
-					callbackURL: dto.callBackURL,
+					email: input.email,
+					callbackURL: input.callBackURL,
 				},
 			});
 			return data.status;
@@ -89,11 +89,12 @@ export class AuthRepository implements IAuthRepository {
 		}
 	}
 
-	async getSession(): Promise<AuthSession | null> {
+	async getSession({ headers }: { headers: Headers }): Promise<AuthSessionResult | null> {
 		try {
 			const data = await auth.api.getSession({
-				headers: await headers(),
+				headers,
 			});
+
 			return data
 				? {
 						session: {
@@ -123,8 +124,9 @@ export class AuthRepository implements IAuthRepository {
 
 	private throwAuthError(error: unknown): never {
 		if (error instanceof APIError) {
-			throw new InfrastructureError(error.message, error);
+			throw new InvalidCredentialsError(error.message, error); //TODO: mapping error entities
 		}
-		throw new InfrastructureError("Unknown error", error);
+		const errorMessage = error instanceof Error ? error.message : "Unexpected error!"; //TODO: mapping error entities
+		throw new ExternalApiError(errorMessage, { cause: error });
 	}
 }

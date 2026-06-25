@@ -3,10 +3,10 @@ import { SearchIcon, User } from "lucide-react";
 import Link from "next/link";
 import type React from "react";
 import { Button } from "@/components/base/button";
-import Authorized from "@/features/auth/components/Authorized";
+import Authenticated from "@/features/auth/components/Authenticated";
 import TriggerSigninDialogButton from "@/features/auth/components/TriggerSigninDialogButton";
 import TriggerSignupDialogButton from "@/features/auth/components/TriggerSignupDialogButton";
-import UnAuthorized from "@/features/auth/components/UnAuthorized";
+import UnAuthenticated from "@/features/auth/components/UnAuthenticated";
 // import UserInformationDropdown from "@/features/profile/components/UserInformationDropdown";
 import ThemeModeButton from "@/features/theme/components/ThemeModeButton";
 import { cn } from "@/lib/utils";
@@ -54,10 +54,10 @@ const MainHeader: React.FC<MainHeaderProps> = () => {
 						<Button variant="outline" size="icon" aria-label="Search">
 							<SearchIcon />
 						</Button>
-						<Authorized>
+						<Authenticated>
 							<AccountInformationDropdown />
-						</Authorized>
-						<UnAuthorized>
+						</Authenticated>
+						<UnAuthenticated>
 							<TriggerSigninDialogButton>
 								<User />
 								<span>Signin</span>
@@ -66,7 +66,7 @@ const MainHeader: React.FC<MainHeaderProps> = () => {
 								<User />
 								<span>SignUp</span>
 							</TriggerSignupDialogButton>
-						</UnAuthorized>
+						</UnAuthenticated>
 						<ThemeModeButton />
 					</div>
 				</div>

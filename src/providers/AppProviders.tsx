@@ -1,10 +1,12 @@
 "use server";
-import { authService } from "@/dal/controller/auth.controller";
+import { headers } from "next/headers";
+import { getInjection } from "@/dal/container";
 import ThemeController from "@/features/theme/controllers/ThemeController";
 import QueryClientProvider from "@/providers/QueryClientProvider";
 import { AppStoreProvider } from "@/stores/app-store/AppStoreProvider";
 export async function AppProviders({ children }: React.PropsWithChildren) {
-	const { session, user } = (await authService.getSession()) || {};
+	const authService = getInjection("authService");
+	const { session, user } = (await authService.getSession({ headers: await headers() })) || {};
 	const userInfoStore = user
 		? {
 				id: user.id,
