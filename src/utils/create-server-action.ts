@@ -8,7 +8,7 @@ type MiddlewareFn<TAddedContext, TContext> = ({
 
 type BuilderState<Schema> = {
 	inputSchema?: Schema;
-	middlewares: MiddlewareFn<any, any>[];
+	middlewares: MiddlewareFn<unknown, unknown>[];
 };
 
 type ActionHandler<TParsedInput, TContext, TResult> = ({

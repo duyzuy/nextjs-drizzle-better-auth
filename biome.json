@@ -24,7 +24,8 @@
 			},
 			"suspicious": {
 				"noUnknownAtRules": "off",
-				"noArrayIndexKey": "off"
+				"noArrayIndexKey": "off",
+				"noExplicitAny": "off"
 			},
 			"a11y": {
 				"useButtonType": "error",
