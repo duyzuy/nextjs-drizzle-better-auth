@@ -1,7 +1,6 @@
 "use client";
 
 import {
-	BookOpen,
 	Bot,
 	ChartSpline,
 	Command,
@@ -10,7 +9,6 @@ import {
 	MapPin,
 	PieChart,
 	Send,
-	Settings2,
 	SquareTerminal,
 } from "lucide-react";
 import type * as React from "react";
@@ -24,7 +22,7 @@ import {
 	SidebarMenuItem,
 } from "../../base/sidebar";
 import { NavMain } from "./NavMain";
-import { NavProjects } from "./NavProject";
+// import { NavProjects } from "./NavProject";
 import { NavSecondary } from "./NavSecondary";
 import { NavUser } from "./NavUser";
 

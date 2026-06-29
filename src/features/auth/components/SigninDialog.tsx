@@ -9,7 +9,9 @@ import {
 } from "../store/auth.selectors";
 import SigninForm from "./SigninForm";
 
-type SigninDialogProps = {};
+type SigninDialogProps = {
+	className?: string;
+};
 
 const SigninDialog: React.FC<SigninDialogProps> = () => {
 	const activeModal = useAppStore(selectActiveModal);

@@ -1,4 +1,3 @@
-import React from "react";
 import UsersTable from "@/features/user/components/UsersTable";
 
 export default function UsersPage() {
@@ -10,7 +9,7 @@ export default function UsersPage() {
 				<div className="aspect-video rounded-xl bg-muted/50" />
 			</div>
 			<h1 className="text-xl">Danh sach user</h1>
-			{/* <UsersTable /> */}
+			<UsersTable />
 		</div>
 	);
 }

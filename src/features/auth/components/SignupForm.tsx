@@ -1,6 +1,6 @@
 "use client";
 import { useAction } from "next-safe-action/hooks";
-import { type SubmitEventHandler, useEffect, useRef } from "react";
+import { type SubmitEventHandler, useRef } from "react";
 import { toast } from "sonner";
 import {
 	Field,

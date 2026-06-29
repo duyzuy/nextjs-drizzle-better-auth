@@ -8,7 +8,7 @@ type MiddlewareFn<TAddedContext, TContext> = ({
 
 type BuilderState<Schema> = {
 	inputSchema?: Schema;
-	middlewares: MiddlewareFn<unknown, unknown>[];
+	middlewares: MiddlewareFn<any, any>[];
 };
 
 type ActionHandler<TParsedInput, TContext, TResult> = ({
@@ -38,7 +38,7 @@ type HandlerReturnResult<T, E = any> = Promise<
 
 const buildSafeServerAction = <
 	TInput = unknown,
-	TContext = {},
+	TContext extends object = {},
 	TSchema extends z.ZodType | undefined = undefined,
 >(
 	state: BuilderState<TSchema> = { middlewares: [] },

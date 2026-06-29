@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import useTheme from "@/features/theme/hooks/useTheme";
 import type { ThemeSliceState } from "@/features/theme/store/theme.slice";
 
