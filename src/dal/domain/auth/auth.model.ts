@@ -52,3 +52,22 @@ export type AuthSessionResult = {
 		image?: string;
 	};
 };
+
+export type RequestResetPasswordInput = {
+	email: string;
+	redirectTo: string;
+};
+
+export type RequestResetPasswordResult = {
+	message: string;
+	status: boolean;
+};
+
+export type ResetPasswordInput = {
+	newPassword: string;
+	token: string;
+};
+
+export type ResetPasswordResult = {
+	status: boolean;
+};

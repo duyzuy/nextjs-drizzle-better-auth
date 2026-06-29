@@ -1,30 +1,28 @@
 "use server";
-import { headers } from "next/headers";
-import { getInjection } from "@/dal/container";
+import { getSession } from "@/features/auth/actions/get-session";
 import ThemeController from "@/features/theme/controllers/ThemeController";
 import QueryClientProvider from "@/providers/QueryClientProvider";
 import { AppStoreProvider } from "@/stores/app-store/AppStoreProvider";
 export async function AppProviders({ children }: React.PropsWithChildren) {
-	const authService = getInjection("authService");
-	const { session, user } = (await authService.getSession({ headers: await headers() })) || {};
-	const userInfoStore = user
+	const { data } = await getSession();
+	const userInfoStore = data
 		? {
-				id: user.id,
-				name: user.name,
-				email: user.email,
-				avatar: user.image,
-				emailVerified: user.emailVerified,
+				id: data.user.id,
+				name: data.user.name,
+				email: data.user.email,
+				avatar: data.user.image,
+				emailVerified: data.user.emailVerified,
 			}
 		: undefined;
 
-	const sessionStore = session
+	const sessionStore = data
 		? {
-				id: session.id,
-				ipAddress: session.ipAddress ?? undefined,
-				token: session.token,
-				userAgent: session.userAgent,
-				userId: session.userId,
-				expiredAt: session.expiresAt,
+				id: data.session.id,
+				ipAddress: data.session.ipAddress ?? undefined,
+				token: data.session.token,
+				userAgent: data.session.userAgent,
+				userId: data.session.userId,
+				expiredAt: data.session.expiresAt,
 			}
 		: undefined;
 

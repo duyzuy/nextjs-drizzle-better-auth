@@ -1,7 +1,7 @@
 "use server";
 import { APIError } from "better-auth";
-import { cookies } from "next/headers";
-import { appContainer, getInjection } from "@/dal/container";
+import { cookies, headers } from "next/headers";
+import { getInjection } from "@/di";
 import { actionClient } from "@/lib/safe-action";
 import { parserCookie } from "@/utils/cookie";
 
@@ -10,17 +10,17 @@ type SignOutSuccessReturn = {
 };
 
 type SignOutErrorReturn = { status: "error"; message: string };
-type SignoutReturn = SignOutSuccessReturn | SignOutErrorReturn;
+type SignOutReturn = SignOutSuccessReturn | SignOutErrorReturn;
 
 export const signoutSafeAction = actionClient
 	.use(async ({ next }) => {
 		return next();
 	})
-	.action(async (): Promise<SignoutReturn> => {
+	.action(async (): Promise<SignOutReturn> => {
 		try {
-			const authService = getInjection("authService");
+			const signOut = getInjection("signOutUseCase");
 
-			const { setCookies, success } = await authService.signOut();
+			const { setCookies, success } = await signOut({ headers: await headers() });
 			const cookieStore = await cookies();
 
 			for (const cookie of setCookies) {

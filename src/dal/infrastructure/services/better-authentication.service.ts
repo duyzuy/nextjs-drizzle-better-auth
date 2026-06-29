@@ -1,18 +1,23 @@
 import { APIError } from "better-auth";
 import { headers } from "next/headers";
-import type { IAuthService } from "@/dal/application/services/auth.service.interface";
+import type { IAuthenticationService } from "@/dal/application/services/authentication.service.interface";
 import type {
 	AuthSessionResult,
 	AuthSignedInResult,
 	AuthSignedUpResult,
+	RequestResetPasswordInput,
+	RequestResetPasswordResult,
+	ResetPasswordInput,
+	ResetPasswordResult,
 	SignInWithEmailInput,
 	SignUpWithEmailInput,
 	VerifyEmailInput,
 } from "@/dal/domain/auth/auth.model";
+import { AuthenticationError } from "@/dal/domain/errors/auth";
+import { ExternalApiError } from "@/dal/domain/errors/common";
 import { auth } from "@/lib/auth";
-import { ExternalApiError, InvalidCredentialsError } from "../errors";
 
-export class AuthService implements IAuthService {
+export class BetterAuthenticationService implements IAuthenticationService {
 	async signUpWithEmail(input: SignUpWithEmailInput): Promise<AuthSignedUpResult> {
 		try {
 			const { user } = await auth.api.signUpEmail({
@@ -63,10 +68,14 @@ export class AuthService implements IAuthService {
 			this.throwAuthError(error);
 		}
 	}
-	async signOut(): Promise<{ success: boolean; setCookies: string[] }> {
+	async signOut({
+		headers,
+	}: {
+		headers: Headers;
+	}): Promise<{ success: boolean; setCookies: string[] }> {
 		try {
 			const data = await auth.api.signOut({
-				headers: await headers(),
+				headers,
 				returnHeaders: true,
 			});
 			const setCookies = data.headers.getSetCookie();
@@ -75,7 +84,7 @@ export class AuthService implements IAuthService {
 			this.throwAuthError(error);
 		}
 	}
-	async sendEmailVerification(input: VerifyEmailInput) {
+	async sendVerificationEmail(input: VerifyEmailInput) {
 		try {
 			const data = await auth.api.sendVerificationEmail({
 				body: {
@@ -122,11 +131,42 @@ export class AuthService implements IAuthService {
 		}
 	}
 
+	async requestResetPassword(
+		input: RequestResetPasswordInput,
+	): Promise<RequestResetPasswordResult> {
+		try {
+			const data = await auth.api.requestPasswordReset({
+				body: {
+					email: input.email,
+					redirectTo: input.redirectTo,
+				},
+			});
+			return data;
+		} catch (error) {
+			this.throwAuthError(error);
+		}
+	}
+
+	async resetPassword(input: ResetPasswordInput): Promise<ResetPasswordResult> {
+		try {
+			const data = await auth.api.resetPassword({
+				body: {
+					newPassword: input.newPassword,
+					token: input.token,
+				},
+			});
+			return data;
+		} catch (error) {
+			this.throwAuthError(error);
+		}
+	}
 	private throwAuthError(error: unknown): never {
 		if (error instanceof APIError) {
-			throw new InvalidCredentialsError(error.message, error); //TODO: mapping error entities
+			throw new AuthenticationError(error.message, error.statusCode, error); //TODO: mapping error entities
 		}
 		const errorMessage = error instanceof Error ? error.message : "Unexpected error!"; //TODO: mapping error entities
 		throw new ExternalApiError(errorMessage, { cause: error });
 	}
 }
+
+export const betterAuthService = new BetterAuthenticationService();

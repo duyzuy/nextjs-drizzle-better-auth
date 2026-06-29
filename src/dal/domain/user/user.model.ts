@@ -1,3 +1,5 @@
+import type { PaginationResult } from "../base/pagination.interface";
+
 export interface User {
 	id: string;
 	createdAt: string;
@@ -7,3 +9,13 @@ export interface User {
 	name: string;
 	image: string | null;
 }
+
+export interface UserUpdateInput extends Pick<User, "image" | "name" | "updatedAt" | "id"> {}
+
+export interface GetUsersInput {
+	page?: number;
+	pageSize?: number;
+	q?: string;
+}
+
+export interface GetUsersResult extends PaginationResult<User> {}

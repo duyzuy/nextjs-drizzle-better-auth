@@ -1,6 +1,8 @@
 "use server";
 import { cookies } from "next/headers";
-import { getInjection } from "@/dal/container";
+import { AuthenticationError } from "@/dal/domain/errors/auth";
+import { getInjection } from "@/di";
+import { actionClient } from "@/lib/safe-action";
 import { parserCookie } from "@/utils/cookie";
 import { SignInWithEmailSchema } from "./auth.schema";
 
@@ -12,15 +14,12 @@ type SignInSuccessReturn = {
 type SignInErrorReturn = { status: "error"; message: string };
 type SignUpReturn = SignInSuccessReturn | SignInErrorReturn;
 
-import { APIError } from "better-auth";
-import { actionClient } from "@/lib/safe-action";
-
 export const signInAction = actionClient
 	.inputSchema(SignInWithEmailSchema)
 	.action(async ({ parsedInput }): Promise<SignUpReturn> => {
 		try {
-			const authService = getInjection("authService");
-			const data = await authService.signInWithEmail({
+			const signInWithEmailUseCase = getInjection("signInWithEmailUseCase");
+			const data = await signInWithEmailUseCase({
 				email: parsedInput.email,
 				password: parsedInput.password,
 				rememberMe: true,
@@ -32,7 +31,6 @@ export const signInAction = actionClient
 
 			for (const cookie of setCookies) {
 				const cookieParsed = parserCookie(cookie);
-				console.log({ cookieParsed, cookie });
 				cookieStore.set({
 					name: cookieParsed.name,
 					value: decodeURIComponent(cookieParsed.value),
@@ -49,7 +47,7 @@ export const signInAction = actionClient
 			};
 		} catch (error) {
 			console.log(error);
-			if (error instanceof APIError) {
+			if (error instanceof AuthenticationError) {
 				return { status: "error", message: error.message };
 			}
 			const errorMessage = error instanceof Error ? error.message : "unknown error";

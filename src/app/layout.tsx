@@ -5,8 +5,6 @@ import SigninDialog from "@/features/auth/components/SigninDialog";
 import SignupDialog from "@/features/auth/components/SignupDialog";
 import { cn } from "@/lib/utils";
 import { themeInitScript } from "@/themes/theme-init-script";
-import MainFooter from "@/widgets/MainFooter";
-import MainHeader from "@/widgets/MainHeader";
 import "../themes/globals.css";
 import "../themes/transition.css";
 
@@ -52,9 +50,7 @@ export default async function RootLayout({
 			</head>
 			<body className="min-h-full flex flex-col">
 				<AppProviders>
-					<MainHeader />
-					<main className="main-layout flex-1">{children}</main>
-					<MainFooter />
+					{children}
 					<SigninDialog />
 					<SignupDialog />
 					<Toaster position="top-center" />

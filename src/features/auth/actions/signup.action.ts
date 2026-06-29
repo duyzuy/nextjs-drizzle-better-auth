@@ -1,5 +1,5 @@
 "use server";
-import { appContainer, getInjection } from "@/dal/container";
+import { getInjection } from "@/di";
 import { actionClient } from "@/lib/safe-action";
 import { SignUpWithEmailSchema } from "./auth.schema";
 
@@ -21,9 +21,9 @@ export const signupSafeAction = actionClient
 	.inputSchema(SignUpWithEmailSchema)
 	.action(async ({ parsedInput }): Promise<SignUpReturn> => {
 		try {
-			const authService = getInjection("authService");
+			const signUpWithEmailUseCase = getInjection("signUpWithEmailUseCase");
 
-			const data = await authService.signUpWithEmail({
+			const data = await signUpWithEmailUseCase({
 				email: parsedInput.email,
 				name: parsedInput.name,
 				password: parsedInput.password,
