@@ -4,6 +4,7 @@ export const getUserUseCase =
 	(userRepository: IUserRepository) =>
 	async (dto?: { page?: number; pageSize?: number; q?: string }) => {
 		try {
+			console.log("fetch");
 			const users = await userRepository.getLists({
 				page: dto?.page,
 				pageSize: dto?.pageSize,

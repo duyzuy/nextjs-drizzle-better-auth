@@ -46,23 +46,23 @@ const data = {
 			url: "/portal/users",
 			icon: SquareTerminal,
 			isActive: true,
-			items: [
-				{
-					title: "User list",
-					url: "/portal/users",
-				},
-			],
+			// items: [
+			// 	{
+			// 		title: "User list",
+			// 		url: "/portal/users/list",
+			// 	},
+			// ],
 		},
 		{
 			title: "Roles",
-			url: "#",
+			url: "/portal/roles",
 			icon: Bot,
-			items: [
-				{
-					title: "Role list",
-					url: "/portal/user",
-				},
-			],
+			// items: [
+			// 	{
+			// 		title: "Role list",
+			// 		url: "/portal/roles",
+			// 	},
+			// ],
 		},
 		// {
 		// 	title: "Documentation",

@@ -23,14 +23,20 @@
 				"noDangerouslySetInnerHtml": "off"
 			},
 			"suspicious": {
-				"noUnknownAtRules": "off"
+				"noUnknownAtRules": "off",
+				"noArrayIndexKey": "off"
 			},
 			"a11y": {
 				"useButtonType": "error",
-				"useValidAnchor": "off"
+				"useValidAnchor": "off",
+				"useSemanticElements": "off"
 			},
 			"style": {
 				"useImportType": "error"
+			},
+			"correctness": {
+				"noUnusedVariables": "off",
+				"noUnusedFunctionParameters": "off"
 			}
 		},
 		"domains": {

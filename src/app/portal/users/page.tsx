@@ -1,7 +1,7 @@
 import React from "react";
 import UsersTable from "@/features/user/components/UsersTable";
 
-const UsersPage = () => {
+export default function UsersPage() {
 	return (
 		<div className="flex flex-1 flex-col gap-4 p-4 pt-0">
 			<div className="grid auto-rows-min gap-4 md:grid-cols-3">
@@ -10,9 +10,7 @@ const UsersPage = () => {
 				<div className="aspect-video rounded-xl bg-muted/50" />
 			</div>
 			<h1 className="text-xl">Danh sach user</h1>
-			<UsersTable />
+			{/* <UsersTable /> */}
 		</div>
 	);
-};
-
-export default UsersPage;
+}

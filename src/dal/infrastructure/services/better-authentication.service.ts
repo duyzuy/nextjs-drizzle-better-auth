@@ -61,6 +61,7 @@ export class BetterAuthenticationService implements IAuthenticationService {
 				id: user.id,
 				name: user.name,
 				email: user.email,
+
 				token,
 				setCookies,
 			};

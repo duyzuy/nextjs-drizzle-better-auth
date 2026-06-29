@@ -18,6 +18,7 @@ export const requestResetPassword = actionClient
 			});
 			return {
 				status: "success",
+				data,
 			};
 		} catch (error) {
 			console.log(error);
