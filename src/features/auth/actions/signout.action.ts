@@ -4,8 +4,8 @@ import { getInjection } from "@/di";
 import { parserCookie } from "@/utils/cookie";
 
 export const signOut = async () => {
-	const signOut = getInjection("signOutUseCase");
-	const { setCookies, success } = await signOut({ headers: await headers() });
+	const authModule = getInjection("authModule");
+	const { setCookies, success } = await authModule.signOutUseCase({ headers: await headers() });
 	const cookieStore = await cookies();
 
 	for (const cookie of setCookies) {

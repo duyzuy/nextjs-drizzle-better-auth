@@ -12,8 +12,8 @@ const requestResetPasswordSchema = z
 	});
 
 export const resetPassword = async (input: { password: string; token: string }) => {
-	const resetPasswordUseCase = getInjection("resetPasswordUseCase");
-	const data = await resetPasswordUseCase({
+	const authModule = getInjection("authModule");
+	const data = await authModule.resetPasswordUseCase({
 		newPassword: input.password,
 		token: input.token,
 	});

@@ -5,8 +5,9 @@ import { getInjection } from "@/di";
 
 export const getSession = cache(async () => {
 	try {
-		const getSession = getInjection("getSessionUseCase");
-		const data = await getSession({ headers: await headers() });
+		const authModule = getInjection("authModule");
+
+		const data = await authModule.getSessionUseCase({ headers: await headers() });
 
 		return {
 			session: data.session,

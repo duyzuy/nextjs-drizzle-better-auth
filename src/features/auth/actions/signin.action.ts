@@ -4,8 +4,8 @@ import { getInjection } from "@/di";
 import { parserCookie } from "@/utils/cookie";
 
 export const signIn = async (input: { email: string; password: string }) => {
-	const signInWithEmailUseCase = getInjection("signInWithEmailUseCase");
-	const data = await signInWithEmailUseCase({
+	const authModule = getInjection("authModule");
+	const data = await authModule.signInWithEmailUseCase({
 		email: input.email,
 		password: input.password,
 		rememberMe: true,

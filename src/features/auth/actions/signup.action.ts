@@ -8,8 +8,8 @@ export const signUp = async (input: {
 	callbackURL?: string;
 	image?: string;
 }) => {
-	const signUpWithEmailUseCase = getInjection("signUpWithEmailUseCase");
-	const data = await signUpWithEmailUseCase({
+	const authModule = getInjection("authModule");
+	const data = await authModule.signUpWithEmailUseCase({
 		email: input.email,
 		name: input.name,
 		password: input.password,

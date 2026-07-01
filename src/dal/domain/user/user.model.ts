@@ -10,7 +10,7 @@ export interface User {
 	image: string | null;
 }
 
-export interface UserUpdateInput extends Pick<User, "image" | "name" | "updatedAt" | "id"> {}
+export interface UpdateUserInput extends Pick<User, "image" | "name" | "updatedAt" | "id"> {}
 
 export interface GetUsersInput {
 	page?: number;
