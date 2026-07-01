@@ -21,7 +21,11 @@ function TriggerSigninDialogButton({ children, btnText }: TriggerSigninDialogBut
 		activeModal ? closeModal() : showModal("signin");
 	};
 
-	return <Button onClick={toggleSignin}>{children ? children : btnText}</Button>;
+	return (
+		<Button type="button" onClick={toggleSignin}>
+			{children ? children : btnText}
+		</Button>
+	);
 }
 
 export default TriggerSigninDialogButton;

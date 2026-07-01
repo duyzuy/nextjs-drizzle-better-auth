@@ -1,16 +1,11 @@
-"use client";
-import { SearchIcon, User } from "lucide-react";
+import { SearchIcon } from "lucide-react";
 import Link from "next/link";
 import type React from "react";
+import { Suspense } from "react";
 import { Button } from "@/components/base/button";
-import Authenticated from "@/features/auth/components/Authenticated";
-import TriggerSigninDialogButton from "@/features/auth/components/TriggerSigninDialogButton";
-import TriggerSignupDialogButton from "@/features/auth/components/TriggerSignupDialogButton";
-import UnAuthenticated from "@/features/auth/components/UnAuthenticated";
-// import UserInformationDropdown from "@/features/profile/components/UserInformationDropdown";
 import ThemeModeButton from "@/features/theme/components/ThemeModeButton";
 import { cn } from "@/lib/utils";
-import { AccountInformationDropdown } from "./AccountInformationDropdown";
+import UserButton, { UserButtonSkeleton } from "./UserButton";
 
 export interface MainHeaderProps {
 	className?: string;
@@ -54,19 +49,9 @@ const MainHeader: React.FC<MainHeaderProps> = () => {
 						<Button variant="outline" size="icon" aria-label="Search">
 							<SearchIcon />
 						</Button>
-						<Authenticated>
-							<AccountInformationDropdown />
-						</Authenticated>
-						<UnAuthenticated>
-							<TriggerSigninDialogButton>
-								<User />
-								<span>Signin</span>
-							</TriggerSigninDialogButton>
-							<TriggerSignupDialogButton>
-								<User />
-								<span>SignUp</span>
-							</TriggerSignupDialogButton>
-						</UnAuthenticated>
+						<Suspense fallback={<UserButtonSkeleton />}>
+							<UserButton />
+						</Suspense>
 						<ThemeModeButton />
 					</div>
 				</div>

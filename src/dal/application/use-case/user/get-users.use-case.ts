@@ -1,10 +1,9 @@
 import type { IUserRepository } from "@/dal/domain/user/user.repo";
 
-export const getUserUseCase =
+export const getUsersUseCase =
 	(userRepository: IUserRepository) =>
 	async (dto?: { page?: number; pageSize?: number; q?: string }) => {
 		try {
-			console.log("fetch");
 			const users = await userRepository.getLists({
 				page: dto?.page,
 				pageSize: dto?.pageSize,

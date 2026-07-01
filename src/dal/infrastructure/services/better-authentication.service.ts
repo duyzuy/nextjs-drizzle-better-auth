@@ -104,7 +104,6 @@ export class BetterAuthenticationService implements IAuthenticationService {
 			const data = await auth.api.getSession({
 				headers,
 			});
-
 			return data
 				? {
 						session: {

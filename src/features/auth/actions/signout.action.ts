@@ -1,48 +1,24 @@
 "use server";
-import { APIError } from "better-auth";
 import { cookies, headers } from "next/headers";
 import { getInjection } from "@/di";
-import { actionClient } from "@/lib/safe-action";
 import { parserCookie } from "@/utils/cookie";
 
-type SignOutSuccessReturn = {
-	status: "success";
+export const signOut = async () => {
+	const signOut = getInjection("signOutUseCase");
+	const { setCookies, success } = await signOut({ headers: await headers() });
+	const cookieStore = await cookies();
+
+	for (const cookie of setCookies) {
+		const cookieParsed = parserCookie(cookie);
+		cookieStore.set({
+			name: cookieParsed.name,
+			value: decodeURIComponent(cookieParsed.value),
+			secure: true,
+			path: cookieParsed.path,
+			httpOnly: cookieParsed.httpOnly,
+			maxAge: cookieParsed.maxAge,
+			sameSite: cookieParsed.sameSite,
+		});
+	}
+	return success;
 };
-
-type SignOutErrorReturn = { status: "error"; message: string };
-type SignOutReturn = SignOutSuccessReturn | SignOutErrorReturn;
-
-export const signoutSafeAction = actionClient
-	.use(async ({ next }) => {
-		return next();
-	})
-	.action(async (): Promise<SignOutReturn> => {
-		try {
-			const signOut = getInjection("signOutUseCase");
-
-			const { setCookies, success } = await signOut({ headers: await headers() });
-			const cookieStore = await cookies();
-
-			for (const cookie of setCookies) {
-				const cookieParsed = parserCookie(cookie);
-				cookieStore.set({
-					name: cookieParsed.name,
-					value: decodeURIComponent(cookieParsed.value),
-					secure: true,
-					path: cookieParsed.path,
-					httpOnly: cookieParsed.httpOnly,
-					maxAge: cookieParsed.maxAge,
-					sameSite: cookieParsed.sameSite,
-				});
-			}
-			return {
-				status: "success",
-			};
-		} catch (err) {
-			if (err instanceof APIError) {
-				return { status: "error", message: err.message };
-			}
-			const errorMessage = err instanceof Error ? err.message : "unknown error";
-			return { status: "error", message: errorMessage };
-		}
-	});

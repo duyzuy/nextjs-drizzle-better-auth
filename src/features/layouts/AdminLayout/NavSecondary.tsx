@@ -7,7 +7,7 @@ import {
 	SidebarMenu,
 	SidebarMenuButton,
 	SidebarMenuItem,
-} from "../../base/sidebar";
+} from "@/components/base/sidebar";
 
 export function NavSecondary({
 	items,
@@ -16,7 +16,7 @@ export function NavSecondary({
 	items: {
 		title: string;
 		url: string;
-		icon: LucideIcon;
+		icon: React.ReactElement;
 	}[];
 } & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
 	return (
@@ -27,7 +27,7 @@ export function NavSecondary({
 						<SidebarMenuItem key={item.title}>
 							<SidebarMenuButton asChild size="sm">
 								<Link href={item.url}>
-									<item.icon />
+									{item.icon}
 									<span>{item.title}</span>
 								</Link>
 							</SidebarMenuButton>

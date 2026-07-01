@@ -3,9 +3,9 @@ import type { IAuthenticationService } from "../../services/authentication.servi
 
 export const getSessionUseCase =
 	(authenticationService: IAuthenticationService) => async (input: { headers: Headers }) => {
-		const data = await authenticationService.getSession({ headers: input.headers });
-		if (!data) {
+		const session = await authenticationService.getSession({ headers: input.headers });
+		if (!session) {
 			throw new AuthenticationError("Session Expired", 401);
 		}
-		return data;
+		return session;
 	};

@@ -1,6 +1,5 @@
 import z from "zod";
 import { getInjection } from "@/di";
-import { actionClient } from "@/lib/safe-action";
 
 const requestResetPasswordSchema = z
 	.object({
@@ -12,25 +11,11 @@ const requestResetPasswordSchema = z
 		error: "Password not match.",
 	});
 
-export const requestResetPassword = actionClient
-	.inputSchema(requestResetPasswordSchema)
-	.action(async ({ parsedInput }) => {
-		try {
-			const resetPasswordUseCase = getInjection("resetPasswordUseCase");
-
-			const data = await resetPasswordUseCase({
-				newPassword: parsedInput.password,
-				token: "",
-			});
-
-			return {
-				status: "success",
-			};
-		} catch (error) {
-			console.log(error);
-
-			return {
-				status: "error",
-			};
-		}
+export const resetPassword = async (input: { password: string; token: string }) => {
+	const resetPasswordUseCase = getInjection("resetPasswordUseCase");
+	const data = await resetPasswordUseCase({
+		newPassword: input.password,
+		token: input.token,
 	});
+	return data;
+};

@@ -17,6 +17,8 @@ type GetUserReturn =
 			data: {
 				page: number;
 				pageSize: number;
+				totalPage: number;
+				totalItem: number;
 				items: User[];
 			};
 	  }
@@ -31,7 +33,7 @@ const GetUsersSchema = z.object({
 	q: z.string().optional(),
 });
 
-export const getUsers = actionClient
+export const getUsersSafeAction = actionClient
 	.inputSchema(GetUsersSchema)
 	.action(async ({ parsedInput }): Promise<GetUserReturn> => {
 		try {
@@ -45,7 +47,13 @@ export const getUsers = actionClient
 
 			return {
 				status: "success",
-				data: usersData,
+				data: {
+					totalItem: usersData.totalItem,
+					totalPage: usersData.totalPage,
+					items: usersData.items,
+					page: usersData.page,
+					pageSize: usersData.pageSize,
+				},
 			};
 		} catch (error) {
 			console.log(error);
@@ -55,3 +63,13 @@ export const getUsers = actionClient
 			};
 		}
 	});
+
+export const getUsers = async (parsedInput: { page: number; pageSize: number; q: string }) => {
+	const getUserUseCase = getInjection("getUserUseCase");
+	const usersData = await getUserUseCase({
+		page: parsedInput.page,
+		pageSize: parsedInput.pageSize,
+		q: parsedInput.q,
+	});
+	return usersData;
+};

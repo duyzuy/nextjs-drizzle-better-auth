@@ -26,10 +26,11 @@ const SignupDialog: React.FC<SignupDialogProps> = () => {
 		openDialog("signin");
 	};
 	const isShowModal = activeModal === "signup";
+
 	return (
 		<Dialog defaultOpen={isShowModal} open={isShowModal} onOpenChange={handleOpenChange}>
 			<DialogContent className="p-6">
-				<SignupForm onClickSignIn={handleOpenSignInModal} />
+				<SignupForm onClickSignIn={handleOpenSignInModal} onCreateSuccess={closeDialog} />
 			</DialogContent>
 		</Dialog>
 	);

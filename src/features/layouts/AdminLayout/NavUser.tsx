@@ -1,7 +1,7 @@
 "use client";
 
 import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut, Sparkles } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "../../base/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/base/avatar";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -10,8 +10,13 @@ import {
 	DropdownMenuLabel,
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
-} from "../../base/dropdown-menu";
-import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "../../base/sidebar";
+} from "@/components/base/dropdown-menu";
+import {
+	SidebarMenu,
+	SidebarMenuButton,
+	SidebarMenuItem,
+	useSidebar,
+} from "@/components/base/sidebar";
 
 export function NavUser({
 	user,

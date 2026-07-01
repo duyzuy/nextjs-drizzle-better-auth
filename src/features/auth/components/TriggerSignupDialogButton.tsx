@@ -21,7 +21,11 @@ function TriggerSignupDialogButton({ children, btnText }: TriggerSignupDialogBut
 		activeModal ? closeModal() : showModal("signup");
 	};
 
-	return <Button onClick={toggleShowModal}>{children ? children : btnText}</Button>;
+	return (
+		<Button variant="outline" type="button" onClick={toggleShowModal}>
+			{children ? children : btnText}
+		</Button>
+	);
 }
 
 export default TriggerSignupDialogButton;

@@ -1,13 +1,13 @@
 "use client";
 
-import { Folder, type LucideIcon, MoreHorizontal, Share, Trash2 } from "lucide-react";
+import { Folder, MoreHorizontal, Share, Trash2 } from "lucide-react";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
-} from "../../base/dropdown-menu";
+} from "@/components/base/dropdown-menu";
 import {
 	SidebarGroup,
 	SidebarGroupLabel,
@@ -16,7 +16,7 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem,
 	useSidebar,
-} from "../../base/sidebar";
+} from "@/components/base/sidebar";
 
 export function NavProjects({
 	projects,
@@ -24,7 +24,7 @@ export function NavProjects({
 	projects: {
 		name: string;
 		url: string;
-		icon: LucideIcon;
+		icon: React.ReactElement;
 	}[];
 }) {
 	const { isMobile } = useSidebar();
@@ -37,7 +37,7 @@ export function NavProjects({
 					<SidebarMenuItem key={item.name}>
 						<SidebarMenuButton asChild>
 							<a href={item.url}>
-								<item.icon />
+								{item.icon}
 								<span>{item.name}</span>
 							</a>
 						</SidebarMenuButton>

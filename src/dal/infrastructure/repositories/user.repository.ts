@@ -1,4 +1,5 @@
 import { asc, count, eq, type InferSelectModel } from "drizzle-orm";
+import { PaginationService } from "@/dal/application/services/pagination.service";
 import type {
 	GetUsersInput,
 	GetUsersResult,
@@ -9,26 +10,21 @@ import type { IUserRepository } from "@/dal/domain/user/user.repo";
 import { db } from "@/db";
 import { user } from "@/db/schema";
 export class UserRepository implements IUserRepository {
-	private page = 1;
-	private pageSize = 20;
+	constructor(private pagination = new PaginationService()) {}
 	async getLists(input: GetUsersInput): Promise<GetUsersResult> {
-		const page = input?.page && input?.page > 0 ? input?.page : this.page;
-		const pageSize = input?.pageSize ?? this.pageSize;
-
+		const { offset, limit, page } = this.pagination.createPaginate({
+			page: input.page ?? 1,
+			pageSize: input.pageSize ?? 20,
+		});
 		const [users, [totalItem]] = await Promise.all([
-			await db
-				.select()
-				.from(user)
-				.orderBy(asc(user.createdAt))
-				.limit(pageSize)
-				.offset((page - 1) * pageSize),
+			await db.select().from(user).orderBy(asc(user.createdAt)).limit(limit).offset(offset),
 			await db.select({ total: count() }).from(user),
 		]);
 
-		const totalPage = Math.ceil(totalItem.total / pageSize);
+		const totalPage = Math.ceil(totalItem.total / limit);
 		return {
 			page,
-			pageSize,
+			pageSize: limit,
 			totalItem: totalItem.total,
 			totalPage,
 			items: users.map((user) => this.toUserModel(user)),
@@ -57,7 +53,6 @@ export class UserRepository implements IUserRepository {
 		const [userData] = await db
 			.update(user)
 			.set({
-				email: userInput.name,
 				image: userInput.image,
 				name: userInput.name,
 			})
@@ -83,5 +78,3 @@ export class UserRepository implements IUserRepository {
 		};
 	}
 }
-
-export const userRepository = new UserRepository();

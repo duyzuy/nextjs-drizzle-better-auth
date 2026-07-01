@@ -1,4 +1,6 @@
+"use client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/base/avatar";
+import { Button } from "@/components/base/button";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -8,7 +10,6 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/base/dropdown-menu";
-import { Button } from "@/components/ui/button";
 import SignoutButton from "@/features/auth/components/SignoutButton";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 

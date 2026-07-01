@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, type ReactNode, useContext, useEffect, useState } from "react";
+import { createContext, type ReactNode, useContext, useState } from "react";
 import { useStore } from "zustand";
 import { type AppStore, type AppStoreInit, createAppStore } from "./app.store";
 
@@ -11,15 +11,15 @@ export const AppStoreContext = createContext<CounterStoreApi | undefined>(undefi
 export interface AppStoreProviderProps {
 	children: ReactNode;
 	session?: AppStoreInit["session"];
-	user: AppStoreInit["user"];
+	user?: AppStoreInit["user"];
 }
 
 export const AppStoreProvider = ({ children, session, user }: AppStoreProviderProps) => {
 	const [store] = useState(() => createAppStore({ session, user }));
 
-	useEffect(() => {
-		store.getState().auth.setSession(session, user);
-	}, [session, user, store]);
+	// useEffect(() => {
+	// 	store.getState().auth.setSession(session, user);
+	// }, [session, user, store]);
 
 	return <AppStoreContext.Provider value={store}>{children}</AppStoreContext.Provider>;
 };

@@ -1,17 +1,23 @@
 import { headers } from "next/headers";
+import { cache } from "react";
+import { AuthenticationError } from "@/dal/domain/errors/auth";
 import { getInjection } from "@/di";
-import { actionClient } from "@/lib/safe-action";
 
-export const getSession = actionClient.action(async () => {
+export const getSession = cache(async () => {
 	try {
 		const getSession = getInjection("getSessionUseCase");
 		const data = await getSession({ headers: await headers() });
+
 		return {
 			session: data.session,
 			user: data.user,
 		};
 	} catch (error) {
-		console.log(error);
-		return null;
+		if (error instanceof AuthenticationError) {
+			return null;
+		}
+		throw error;
+		// console.log(error);
+		//silent
 	}
 });

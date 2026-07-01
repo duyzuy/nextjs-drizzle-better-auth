@@ -2,7 +2,7 @@ import { ViewTransition } from "react";
 import AboutSection from "@/widgets/home/AboutSection";
 import HeroSection from "@/widgets/home/HeroSection";
 import HightLightBoxes from "@/widgets/home/HighlighBoxes";
-import TopDestinations from "@/widgets/home/TopDestinations";
+// import TopDestinations from "@/widgets/home/TopDestinations";
 export default function Home() {
 	return (
 		<ViewTransition
@@ -23,7 +23,7 @@ export default function Home() {
 			<div className="h-8" />
 			<HightLightBoxes />
 			<div className="h-8" />
-			<TopDestinations />
+			{/* <TopDestinations /> */}
 			<div className="h-8" />
 			<AboutSection />
 			<div className="h-8" />

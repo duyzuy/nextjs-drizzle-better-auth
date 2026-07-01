@@ -2,8 +2,7 @@
 
 import { ChevronRight, type LucideIcon } from "lucide-react";
 import Link from "next/link";
-import { TooltipProvider } from "@/components/base/tooltip";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../../base/collapsible";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/base/collapsible";
 import {
 	SidebarGroup,
 	SidebarGroupLabel,
@@ -14,7 +13,8 @@ import {
 	SidebarMenuSub,
 	SidebarMenuSubButton,
 	SidebarMenuSubItem,
-} from "../../base/sidebar";
+} from "@/components/base/sidebar";
+import { TooltipProvider } from "@/components/base/tooltip";
 
 export function NavMain({
 	items,
@@ -22,7 +22,7 @@ export function NavMain({
 	items: {
 		title: string;
 		url: string;
-		icon: LucideIcon;
+		icon: React.ReactElement;
 		isActive?: boolean;
 		items?: {
 			title: string;
@@ -40,7 +40,7 @@ export function NavMain({
 							<SidebarMenuItem>
 								<SidebarMenuButton asChild tooltip={item.title}>
 									<Link href={item.url}>
-										<item.icon />
+										{item.icon}
 										<span>{item.title}</span>
 									</Link>
 								</SidebarMenuButton>
